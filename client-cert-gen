@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# certificate parameters
+firstname="Matthias"
+lastname="Bock"
+keystrength="2048"
+country="DE"
+state="Berlin"
+city="Berlin"
+company="IT-Beratung Bock"
+email="mail@matthiasbock.net"
+
+fullname="$firstname $lastname"
+fileprefix="$firstname$lastname"
+section="$company"
+common="$name"
+
+# signing parameters
+serialnumber="5"
+CAfileprefix="CA"
+
+# generate a key
+openssl genrsa -out "$fileprefix.key" "$keystrength"
+
+# request signing
+openssl req -new -key "$fileprefix.key" -out "$fileprefix.csr"
+
+# sign with your CA certificate
+openssl x509 -req -days 380 -in "$fileprefix.csr" -CA "$CAfileprefix.crt" -CAkey "$CAfileprefix.key" -set_serial $serialnumber -out "$fileprefix.crt"
+
+# export as p12
+openssl pkcs12 -export -name "$fullname" -in "$fileprefix.crt" -inkey "$fileprefix.key" -certfile "$CAfileprefix.crt" -out "$fileprefix.p12"
